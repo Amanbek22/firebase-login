@@ -1,23 +1,31 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from "react";
 import './App.css';
+import { BrowserRouter as Router } from "react-router-dom";
+import firebase from "./firebase/index.js";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useRoute } from "./hooks/route.js"
 
 function App() {
+  const [isAuth, setIsAuth] = useState(false);
+  const [isLoading, setIsLoading] = useState(true)
+  const route = useRoute(isAuth);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      setIsAuth(user);
+      setIsLoading(false);
+    });
+  }, []);
+
+  if(isLoading) return <h2>...Loading</h2>
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        {route}
+        <ToastContainer />
+      </Router>
     </div>
   );
 }
